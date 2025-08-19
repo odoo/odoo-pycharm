@@ -1,0 +1,9 @@
+.DS_Store
+.gradle
+.idea
+.intellijPlatform
+.kotlin
+.qodana
+build
+src/main/resources/odools-binaries
+src/main/resources/typeshed

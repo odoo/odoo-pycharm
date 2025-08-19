@@ -1,0 +1,28 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.odoo.odools</id>
+    <name>Odoo</name>
+    <vendor>Odoo</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <resource-bundle>messages.MyBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <platform.lsp.serverSupportProvider implementation="com.odoo.odools.OdooLSLspServerSupportProvider"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.odoo.odools.OdooLSPathConfigurable"
+                id="com.odoo.odools.OdooLSPathConfigurable"
+                displayName="Odoo"/>
+        <notificationGroup
+                id="OdooLS Notifications"
+                displayType="BALLOON"
+                isLogByDefault="false"/>
+        <postStartupActivity implementation="com.odoo.odools.OdooLSInstallationProjectActivity"/>
+        <fileEditorProvider implementation="com.odoo.odools.HtmlPreviewEditorProvider"/>
+        <statusBarWidgetFactory
+                implementation="com.odoo.odools.OdooLspStatusWidgetFactory"/>
+    </extensions>
+</idea-plugin>
