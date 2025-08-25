@@ -76,8 +76,11 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
                 override fun actionPerformed(e: AnActionEvent) {
                     val currentFile = getCurrentFile();
                     val logs = getCurrentLogs(params.getPid());
+                    val statusBar = WindowManager.getInstance().getStatusBar(project)
+                    val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
+                    val currentConfig = widget?.getCurrentConfiguration()?.second
                     if (logs != null) {
-                        CrashReportForm(project, currentFile, logs).show()
+                        CrashReportForm(project, currentFile, params.getCrashInfo(), currentConfig, logs).show()
                     }
                 }
             })

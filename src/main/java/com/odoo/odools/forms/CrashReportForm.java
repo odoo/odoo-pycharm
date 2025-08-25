@@ -40,11 +40,18 @@ public class CrashReportForm extends DialogWrapper {
     private String currentFileContent;
     private String logsPath;
     private String logContent;
+    private String crashInfo;
+    private String currentConfig;
 
-    public CrashReportForm(Project project, VirtualFile currentFile, String logs_path) {
+    public CrashReportForm(Project project, VirtualFile currentFile, String crash_info, String currentConfig, String logs_path) {
         super(project);
         this.currentFile = currentFile;
         this.logsPath = logs_path;
+        this.crashInfo = crash_info;
+        this.currentConfig = currentConfig;
+        if (currentConfig == null) {
+            this.currentConfig = "Config not found";
+        }
         setTitle("OdooLS Crash Report");
         init(); // required!
     }
@@ -157,11 +164,11 @@ public class CrashReportForm extends DialogWrapper {
                 escapeForJson(currentFileContent),
                 currentFile.getPath(),
                 base64,
-                "Open log file to get error",
+                escapeForJson(this.crashInfo),
                 escapeForJson(this.tDescr.getText()),
                 pluginVersion,
                 "See configuration",
-                "Not available for now"
+                escapeForJson(this.currentConfig)
         );
     }
 

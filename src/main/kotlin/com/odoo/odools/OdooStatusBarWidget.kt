@@ -13,7 +13,6 @@ import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.platform.lsp.api.LspServerState
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.application.ApplicationManager
@@ -35,7 +34,7 @@ class OdooLspStatusWidget(
     private var widgetState = WidgetState("Odoo", "Odoo (not started)", true)
     private var listProfiles: List<String> = listOf("default", "disabled")
     private var gotProfiles: Boolean = false
-    private var config_html: Map<String, Any> = mapOf();
+    private var configHtml: Map<String, Any> = mapOf();
     private var currentStatus = "stop"
 
     private var popup: JBPopup? = null
@@ -52,8 +51,20 @@ class OdooLspStatusWidget(
         gotProfiles = true
     }
 
+    fun getCurrentConfiguration(): Pair<String, String> {
+        val currentProfile = project.service<OdooProjectSettingsService>().state.selectedProfile
+        var config = configHtml[currentProfile]
+        if (config == null) {
+            config = "No configuration for this name"
+        }
+        return Pair<String, String>(
+                currentProfile,
+                config as String
+                )
+    }
+
     fun updateConfigurations(html: Map<String, Any>) {
-        this.config_html = html;
+        this.configHtml = html;
     }
 
     fun updateStatus(status: String? = null) {
@@ -132,7 +143,7 @@ class OdooLspStatusWidget(
             if (isRunning) {
                 add(object : AnAction("Show Configurations") {
                     override fun actionPerformed(e: AnActionEvent) {
-                        openHtmlInEditor(project, config_html.get("__all__") as String, "All_configurations.preview.html")
+                        openHtmlInEditor(project, configHtml.get("__all__") as String, "All_configurations.preview.html")
                     }
                 })
             }
