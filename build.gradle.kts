@@ -100,7 +100,16 @@ intellijPlatform {
         // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels = providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
+        channels = providers.gradleProperty("pluginVersion").map { version ->
+            val parts = version.substringBefore('-').split(".")
+            val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
+            val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            var channels = if (minor % 2 == 0) listOf() else listOf("beta")
+            if (major == 0) {
+                channels = if (minor % 2 == 0) listOf("beta") else listOf()
+            }
+            channels
+        }
     }
 
     pluginVerification {

@@ -6,8 +6,6 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
         <platform.lsp.serverSupportProvider implementation="com.odoo.odools.OdooLSLspServerSupportProvider"/>
 
@@ -23,6 +21,7 @@
         <postStartupActivity implementation="com.odoo.odools.OdooLSInstallationProjectActivity"/>
         <fileEditorProvider implementation="com.odoo.odools.HtmlPreviewEditorProvider"/>
         <statusBarWidgetFactory
+                id="OdooLspStatusWidget"
                 implementation="com.odoo.odools.OdooLspStatusWidgetFactory"/>
     </extensions>
 </idea-plugin>

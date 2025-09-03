@@ -171,7 +171,7 @@ class OdooLspStatusWidget(
             add(object : AnAction("Go to Settings") {
                 override fun actionPerformed(e: AnActionEvent) {
                     com.intellij.openapi.options.ShowSettingsUtil.getInstance()
-                        .showSettingsDialog(project, "OdooLS")
+                        .showSettingsDialog(project, "Odoo")
                 }
             })
         }
