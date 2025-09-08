@@ -1,6 +1,66 @@
 # Changelog
 
-## [0.12.0]
+## [0.12.1] - 2025/09/05 - Hotfixes
+
+### PyCharm
+
+- Fix the button that lead to OdooLS settings
+
+### VsCode
+
+- Update the version check that display the "Beta warning" to fit the post 1.0 format
+
+### Server
+
+- Upgrade Rust edition from 2021 to 2024
+- Configuration files: Diagnostics filter paths is now an array instead of a String, and we can choose if the filter is applied to any file in the list of paths or not in the list of path
+- Improve the the origin_range (the underlined part of the test) in chains of relational fields when doing a gotodefinition on a String
+- Improve the detection of the detection of python (choose python or python3 depending on availability)
+- Remove self from list of models implementation in gotodefinition
+- Improve the line breaks in Hovers depending on the capabilities of the client. VsCode is supporting markdown and so `  \n`, but PyCharm only support `<br/>` that VsCode is escaping. The server now uses the given parser name from the client to choose the right line break
+- Force color background and font for 'all configuration page' to ensure clear visibility on all clients.
+- Log the full config of the user in the logs to help debugging
+- Remove compilation warnings
+
+### Fixes
+
+- New $autoDetectAddons was not always properly detected
+- Fix launch.json on linux since the repository structure update
+- Refactor the threadpool to fix concurrency issue in the way some LSP messages were handled, causing random rare crashes.
+
+## [0.12.0] - 2025/08/28 - PyCharm, Csv and configurations
+
+This patch includes somes changes required for the new [PyCharm](https://github.com/odoo/odoo-ls-pycharm) plugin.
+We changed some keys in the configurations files to improve clarity and added a TomL schema helper. Install a TomL extension to get
+syntax diagnostics, as well as validation of your configuration files. (You'll have the best by installing "Even Better TOML" AND "Tombi" on vscode)
+
+### PyCharm
+
+- Start and manage the lifecycle of OdooLS in Pycharm.
+- Add a Profile Selector
+- Add a Crash Report
+- Add a webview to display configuration resumes.
+
+### VsCode
+
+- Code has been moved to its own repository: https://github.com/odoo/odoo-ls-vscode
+- Automatically link toml schema to odools.toml files
+
+### Server
+
+- New parameters available in configuration: "no_typeshed_stubs" that prevents the loading of typeshed stubs, if you want to provide yours, and "stdlib", that allows you to provide a different location for your stdlib stubs.
+- Remove parameter "add_workspace_addon_path" from configs. Addons path now contains the value "$autoDetectAddons" by default, that means that server will automatically try to detect addons. When setting addon paths in your configuration, you can add this value to the list to keep this behaviour.
+- Load CSV files and extract xml_id from it
+- Improve reloading and cache update of files with invalid syntax
+- Handle If..else statements with an empty bloc in the if and else (invalid ast)
+- OLS03020 is now evaluated later in the process to give accurate results
+- Improve dynamic reloading on creation of missing models
+
+### Fixes
+
+- Server will now search for stubs and additional files next to its exe, and not in the current working directory. If not present, it will search then in current working directory
+- Fix a version verification in is_inheriting method
+- Fix crashes that can happen if one of the following field has a value that is not of the right type ("False" instead of False for example): "comodel_name", "related", "compute", "delegate", "required", "default"
 
 ## [0.10.0] - 2025/08/08 - Better configuration and XML features
 
