@@ -16,12 +16,12 @@ val osName = System.getProperty("os.name").lowercase()
 val arch = System.getProperty("os.arch").lowercase()
 
 val targetOs = when {
-    osName.contains("win") && arch.contains("64") -> "win32-x64"
-    osName.contains("win") && arch.contains("arm") -> "win32-arm64"
-    osName.contains("linux") && arch.contains("64") -> "linux-x64"
-    osName.contains("linux") && arch.contains("arm") -> "linux-arm64"
-    osName.contains("darwin") && arch.contains("64") -> "darwin-x64"
-    osName.contains("darwin") && arch.contains("arm") -> "darwin-arm64"
+    SystemInfo.isWindows && !SystemInfo.isAarch64 -> "win32-x64"
+    SystemInfo.isWindows && SystemInfo.isAarch64 -> "win32-arm64"
+    SystemInfo.isLinux && !SystemInfo.isAarch64 -> "linux-x64"
+    SystemInfo.isLinux && SystemInfo.isAarch64 -> "linux-arm64"
+    SystemInfo.isMac && !SystemInfo.isAarch64 -> "darwin-x64"
+    SystemInfo.isMac && SystemInfo.isAarch64 -> "darwin-arm64"
     else -> throw IllegalStateException("Unsupported OS: $osName $arch")
 }
 
