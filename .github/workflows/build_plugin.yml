@@ -1,0 +1,111 @@
+name: Build PyCharm Plugin
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          MINOR=$(echo "$TAG" | cut -d. -f2)
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "changelog_url=https://raw.githubusercontent.com/odoo/odoo-ls/$TAG/changelog.md" >> $GITHUB_OUTPUT
+      - name: Download changelog
+        run: |
+          wget ${{ steps.version.outputs.changelog_url }} -O CHANGELOG.md
+
+      - name: Download language server binaries
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-win32-x86_64-$VERSION.zip -O odoo-ls.zip
+          unzip odoo-ls.zip -d src/main/resources/odools-binaries/win32-x64
+          rm odoo-ls.zip
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-win32-aarch64-$VERSION.zip -O odoo-ls.zip
+          unzip odoo-ls.zip -d src/main/resources/odools-binaries/win32-arm64
+          rm odoo-ls.zip
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-linux-x86_64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-x64
+          rm odoo-ls.tar.gz
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-linux-aarch64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-arm64
+          rm odoo-ls.tar.gz
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-darwin-x86_64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/darwin-x64
+          rm odoo-ls.tar.gz
+          wget https://github.com/odoo/odoo-ls/releases/download/$VERSION/odoo-darwin-aarch64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/darwin-arm64
+          rm odoo-ls.tar.gz
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build plugin with Gradle
+        run: ./gradlew buildPlugin
+
+      - name: Upload built plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: pycharm-plugin
+          path: build/distributions/*.zip
+
+  release:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./dist
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          MINOR=$(echo "$TAG" | cut -d. -f2)
+          echo "changelog_url=https://raw.githubusercontent.com/odoo/odoo-ls/$TAG/changelog.md" >> $GITHUB_OUTPUT
+          if [ $((MINOR % 2)) -eq 1 ]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+            echo "title=$TAG - Beta" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "title=$TAG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download changelog
+        run: |
+          wget ${{ steps.version.outputs.changelog_url }}
+
+      - name: Extract changelog entry
+        id: changelog
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          awk "/^## \\[$TAG\\]/ {flag=1; next} /^## \\[/ {flag=0} flag {print}" changelog.md > RELEASE_NOTES.md
+
+      - name: Display files
+        run: ls -R ./dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.version.outputs.title }}
+          tag_name: ${{ github.ref_name }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          body_path: RELEASE_NOTES.md
+          files: ./dist/**/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
