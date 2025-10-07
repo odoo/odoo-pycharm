@@ -80,7 +80,8 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
                     val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
                     val currentConfig = widget?.getCurrentConfiguration()?.second
                     if (logs != null) {
-                        CrashReportForm(project, currentFile, params.getCrashInfo(), currentConfig, logs).show()
+                        CrashReportForm(project, currentFile, params.getCrashInfo(), currentConfig,
+                            logs, params.getRecentMessages()).show()
                     }
                 }
             })
