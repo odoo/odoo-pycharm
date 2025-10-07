@@ -8,15 +8,18 @@ class DisplayCrashNotificationParams {
 
     private var crashInfo: String
     private var pid: Long
+    private var recentMessages: String
 
     constructor() {
         crashInfo = String()
         pid = 0
+        recentMessages = String()
     }
 
-    constructor(@NonNull crashInfo: String, @NonNull pid: Long) {
+    constructor(@NonNull crashInfo: String, @NonNull pid: Long, @NonNull recentMessages: String) {
         this.crashInfo = Preconditions.checkNotNull<String>(crashInfo, "crashInfo")
         this.pid = Preconditions.checkNotNull(pid, "pid")
+        this.recentMessages = Preconditions.checkNotNull<String>(crashInfo, "recentMessages")
     }
 
     @NonNull
@@ -33,8 +36,17 @@ class DisplayCrashNotificationParams {
         return this.crashInfo
     }
 
-    fun setCrashInfo(@NonNull configFile: List<Map<String, Any>>) {
+    fun setCrashInfo(@NonNull crashInfo: String) {
         this.crashInfo = Preconditions.checkNotNull<String>(crashInfo, "crashInfo")
+    }
+
+    @NonNull
+    fun getRecentMessages(): String {
+        return this.recentMessages
+    }
+
+    fun setRecentMessages(@NonNull recentMessages: String) {
+        this.recentMessages = Preconditions.checkNotNull<String>(recentMessages, "recentMessages")
     }
 
     override fun toString(): String {

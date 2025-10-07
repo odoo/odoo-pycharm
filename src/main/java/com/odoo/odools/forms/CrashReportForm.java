@@ -42,8 +42,9 @@ public class CrashReportForm extends DialogWrapper {
     private String logContent;
     private String crashInfo;
     private String currentConfig;
+    private final String recentMessages;
 
-    public CrashReportForm(Project project, VirtualFile currentFile, String crash_info, String currentConfig, String logs_path) {
+    public CrashReportForm(Project project, VirtualFile currentFile, String crash_info, String currentConfig, String logs_path, String recentMessages) {
         super(project);
         this.currentFile = currentFile;
         this.logsPath = logs_path;
@@ -52,6 +53,7 @@ public class CrashReportForm extends DialogWrapper {
         if (currentConfig == null) {
             this.currentConfig = "Config not found";
         }
+        this.recentMessages = recentMessages;
         setTitle("OdooLS Crash Report");
         init(); // required!
     }
@@ -107,7 +109,7 @@ public class CrashReportForm extends DialogWrapper {
     }
 
     private void sendReport(VirtualFile currentFile, String currentFileContent, String logsPath) {
-        String url = "https://iap-services.odoo.com/api/odools/vscode/2/crash_report";
+        String url = "https://iap-services.odoo.com/api/odools/vscode/3/crash_report";
         String json = buildJson(currentFile, currentFileContent, logsPath);
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
@@ -155,7 +157,8 @@ public class CrashReportForm extends DialogWrapper {
                 "additional_info": "%s",
                 "version": "%s",
                 "python_version": "%s",
-                "configuration": "%s"
+                "configuration": "%s",
+                "recent_messages": "%s"
               }
             }
             """.formatted(
@@ -168,7 +171,8 @@ public class CrashReportForm extends DialogWrapper {
                 escapeForJson(this.tDescr.getText()),
                 pluginVersion,
                 "See configuration",
-                escapeForJson(this.currentConfig)
+                escapeForJson(this.currentConfig),
+                escapeForJson(this.recentMessages)
         );
     }
 
