@@ -1,9 +1,11 @@
 package com.odoo.odools
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.JBColor
+import com.intellij.ui.components.ActionLink
 import com.intellij.ui.components.JBLabel
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -44,6 +46,7 @@ class OdooLSPathConfigurable : Configurable {
             <html>
                 <body style='width: 500px; color: gray;'>
                     The plugin will use this path to install needed resources and logs.<br>
+                    OdooLS is configures through configuration files. To create one, please refer to our wiki:
                 </body>
             </html>
             """.trimIndent()
@@ -51,6 +54,13 @@ class OdooLSPathConfigurable : Configurable {
         description.font = description.font.deriveFont(description.font.size2D - 1f)
         description.foreground = JBColor.GRAY
         container.add(description, gbc)
+        val externalLink = ActionLink("The configuration wiki") {
+            BrowserUtil.browse("https://github.com/odoo/odoo-ls/wiki/3.-Configuration-files")
+        }.apply {
+            setContextHelpIcon()
+        }
+        gbc.gridy = 3
+        container.add(externalLink, gbc)
 
         //outerPanel to keep everything at top of the window
         val outerPanel = JPanel(BorderLayout())
