@@ -41,21 +41,22 @@ For installation instructions and configuration details, see the [OdooLS](https:
 
 ## Build the plugin manually
 
-To build the plugin, clone this repository and its submodule with
+To build the plugin, first clone the repository and setup the submodules:
 
 ```shell
-git clone git@github.com:odoo/odoo-ls-pycharm.git
-cd odoo-ls-pycharm
-git submodule init
-git submodule update
+$ git clone git@github.com:odoo/odoo-ls-pycharm.git
+$ cd odoo-ls-pycharm
+$ git submodule init
+$ git submodule update
+```
+Then retrieve an actual changelog to replace the placeholder:
+```sh
+$ curl -o CHANGELOG.md https://raw.githubusercontent.com/odoo/odoo-ls/refs/heads/release/changelog.md
 ```
 
-Then, you have to put OdooLs binaries (and .pdb for windows) in src/main/resources/odoo-binaries.
-Then, you can launch
+Then put OdooLs binaries (and .pdb for windows) in `src/main/resources/odoo-binaries`.
 
-```shell
-./gradlew clean buildPlugin
-```
+Finally, you can launch `./gradlew clean buildPlugin`. Note that as of this writing you need at least the JRE 17.
 
 Your plugin will be in build/distributions
 
