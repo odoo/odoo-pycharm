@@ -54,7 +54,7 @@ Then retrieve an actual changelog to replace the placeholder:
 $ curl -o CHANGELOG.md https://raw.githubusercontent.com/odoo/odoo-ls/refs/heads/release/changelog.md
 ```
 
-Then put OdooLs binaries (and .pdb for windows) in `src/main/resources/odoo-binaries`.
+Then put OdooLs binaries (and .pdb for windows) in `src/main/resources/odools-binaries`.
 
 Finally, you can launch `./gradlew clean buildPlugin`. Note that as of this writing you need at least the JRE 17.
 
