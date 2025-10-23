@@ -36,7 +36,7 @@ For installation instructions and configuration details, see the [OdooLS](https:
 
 - Manually:
 
-  Download the [latest release](https://github.com/odoo/odoo-ls-pycharm/releases) and install it manually using
+  Download the [latest release](https://github.com/odoo/odoo-pycharm/releases) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
 ## Build the plugin manually
