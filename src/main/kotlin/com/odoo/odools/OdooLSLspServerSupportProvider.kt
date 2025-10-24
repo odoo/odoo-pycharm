@@ -47,7 +47,6 @@ internal class OdooLSLspServerSupportProvider : LspServerSupportProvider {
         if (project.isDisposed) return
 
         if (!findManifest(project)) return
-        if (project.service<OdooProjectSettingsService>().state.selectedProfile == "disabled") return
         println("__manifest__.py file detected in project. Starting OdooLS")
 
         serverStarter.ensureServerStarted(OdooLsServerDescriptor(project))
