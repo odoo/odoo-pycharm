@@ -75,9 +75,13 @@ class OdooLspStatusWidget(
             currentStatus = "start"
         } else if (status == "stop") {
             currentStatus = "stop"
+        } else if (status == "git_locked") {
+            currentStatus = "git_locked"
         }
         if (currentStatus == "start") {
             full_name += " - Loading"
+        } else if (currentStatus == "git_locked") {
+            full_name += " - awaiting git"
         }
         widgetState = WidgetState("Odoo LS plugin", full_name, true)
         update()
