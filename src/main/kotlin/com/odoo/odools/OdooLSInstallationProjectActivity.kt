@@ -53,12 +53,17 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
     }
 
     fun copyDirectoryFromResourcesToInstallLocation(directoryPath: String, targetPath: String) {
-        val targetLocation = Paths.get(targetPath, "typeshed")
+        val targetLocation = Paths.get(targetPath, directoryPath)
         val resourceUrl = javaClass.classLoader.getResource(directoryPath)
             ?: throw IllegalArgumentException("Resource not found: $directoryPath")
 
         if (resourceUrl.protocol == "jar") {
-            val fileSystem = FileSystems.newFileSystem(resourceUrl.toURI(), emptyMap<String, Any>())
+            val uri = resourceUrl.toURI()
+            val fileSystem = try {
+                FileSystems.getFileSystem(uri)
+            } catch (e: java.nio.file.FileSystemNotFoundException) {
+                FileSystems.newFileSystem(uri, emptyMap<String, Any>())
+            }
             val jarPath = fileSystem.getPath(directoryPath)
             Files.walk(jarPath).forEach { source ->
                 val dest = targetLocation.resolve(jarPath.relativize(source).toString())
@@ -82,7 +87,7 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
         }
     }
 
-    fun ressourceToInstallPath(resourcePath: String, targetPath: Path) {
+    fun resourceToInstallPath(resourcePath: String, targetPath: Path) {
         javaClass.classLoader.getResourceAsStream(resourcePath).use { input ->
             requireNotNull(input) { "Resource not found: $resourcePath" }
             try {
@@ -192,22 +197,30 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
 
         installedVersionOlder(Paths.get(targetLocation, exeName)) { isOlder ->
             if (isOlder) {
-                ressourceToInstallPath("odools-binaries/${targetOs}/$exeName", Paths.get(targetLocation, exeName))
+                resourceToInstallPath("odools-binaries/${targetOs}/$exeName", Paths.get(targetLocation, exeName))
 
                 if (SystemInfo.isWindows &&
                     (!Files.exists(Paths.get(targetLocation, "odoo_ls_server.pdb")))) {
-                    ressourceToInstallPath("odools-binaries/${targetOs}/odoo_ls_server.pdb", Paths.get(targetLocation, "odoo_ls_server.pdb"))
+                    resourceToInstallPath("odools-binaries/${targetOs}/odoo_ls_server.pdb", Paths.get(targetLocation, "odoo_ls_server.pdb"))
                 }
                 if (!SystemInfo.isWindows) {
                     Paths.get(targetLocation, exeName).toFile().setExecutable(true, false)
                 }
             }
-            if (!Files.exists(Paths.get(targetLocation, "typeshed")) && isTypeshedOutDated(Paths.get(targetLocation, "typeshed"))) {
+            if (!Files.exists(Paths.get(targetLocation, "typeshed")) || isTypeshedOutDated(Paths.get(targetLocation, "typeshed"))) {
                 val file = Paths.get(targetLocation, "typeshed").toFile()
                 if (file.exists()) {
                     file.deleteRecursively()
                 }
                 copyDirectoryFromResourcesToInstallLocation("typeshed", targetLocation)
+            }
+            if (!Files.exists(Paths.get(targetLocation, "additional_stubs"))) {
+                val file = Paths.get(targetLocation, "additional_stubs").toFile()
+                if (file.exists()) {
+                    file.deleteRecursively()
+                }
+                copyDirectoryFromResourcesToInstallLocation("additional_stubs", targetLocation)
+
             }
             println("Installation complete")
             callback()

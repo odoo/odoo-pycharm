@@ -26,6 +26,21 @@ jobs:
         run: |
           wget ${{ steps.version.outputs.changelog_url }} -O CHANGELOG.md
 
+      - name: Checkout additional stubs from OdooLS
+        uses: actions/checkout@v4
+        with:
+          repository: odoo/odoo-ls
+          ref: ${{ steps.version.outputs.version }}
+          path: additional_stubs
+          sparse-checkout: server/additional_stubs
+          sparse-checkout-cone-mode: false
+
+      - name: Flatten additional_stubs and clean
+        run: |
+          # Move the stubs to the root of additional_stubs
+          mv additional_stubs/server/additional_stubs/* src/main/resources/additional_stubs/
+          rm -rf additional_stubs/server
+
       - name: Download language server binaries
         run: |
           VERSION=${{ steps.version.outputs.version }}
