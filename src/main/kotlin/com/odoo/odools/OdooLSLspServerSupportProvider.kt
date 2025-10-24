@@ -10,18 +10,19 @@ import com.intellij.platform.lsp.api.*
 import com.intellij.platform.lsp.api.customization.*
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.system.CpuArch
 import org.eclipse.lsp4j.ConfigurationItem
 
 val osName = System.getProperty("os.name").lowercase()
 val arch = System.getProperty("os.arch").lowercase()
 
 val targetOs = when {
-    SystemInfo.isWindows && !SystemInfo.isAarch64 -> "win32-x64"
-    SystemInfo.isWindows && SystemInfo.isAarch64 -> "win32-arm64"
-    SystemInfo.isLinux && !SystemInfo.isAarch64 -> "linux-x64"
-    SystemInfo.isLinux && SystemInfo.isAarch64 -> "linux-arm64"
-    SystemInfo.isMac && !SystemInfo.isAarch64 -> "darwin-x64"
-    SystemInfo.isMac && SystemInfo.isAarch64 -> "darwin-arm64"
+    SystemInfo.isWindows && !CpuArch.isArm64() -> "win32-x64"
+    SystemInfo.isWindows && CpuArch.isArm64() -> "win32-arm64"
+    SystemInfo.isLinux && !CpuArch.isArm64() -> "linux-x64"
+    SystemInfo.isLinux && CpuArch.isArm64() -> "linux-arm64"
+    SystemInfo.isMac && !CpuArch.isArm64() -> "darwin-x64"
+    SystemInfo.isMac && CpuArch.isArm64() -> "darwin-arm64"
     else -> throw IllegalStateException("Unsupported OS: $osName $arch")
 }
 
