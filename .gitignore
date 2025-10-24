@@ -7,3 +7,4 @@
 build
 src/main/resources/odools-binaries
 src/main/resources/typeshed
+additional_stubs
