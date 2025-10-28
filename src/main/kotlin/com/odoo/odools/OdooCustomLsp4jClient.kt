@@ -36,7 +36,7 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
     fun setConfiguration(payload: SetConfigurationParams) {
         var html = payload.getHtml()
         var profiles = html.keys.filter { it != "__all__" }.toMutableList()
-        profiles.add("disabled")
+        profiles.add("Disabled")
         val statusBar = WindowManager.getInstance().getStatusBar(project)
         val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
         widget?.updateListProfiles(profiles)
