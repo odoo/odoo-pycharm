@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.platform.lsp.api.LspServerManager
 import java.nio.charset.StandardCharsets
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -47,8 +48,9 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
         if (isInstalled == null || !isInstalled) {
             installFromResources(pathToInstallation) {
                 project.putUserData(ODOO_LSP_INSTALLED, true)
+                LspServerManager.getInstance(project)
+                    .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
             }
-            return
         }
     }
 

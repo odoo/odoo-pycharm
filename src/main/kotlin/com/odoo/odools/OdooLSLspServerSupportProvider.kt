@@ -8,8 +8,6 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.*
 import com.intellij.platform.lsp.api.customization.*
-import com.intellij.psi.search.FilenameIndex
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.system.CpuArch
 import org.eclipse.lsp4j.ConfigurationItem
 
@@ -30,31 +28,15 @@ private val HAS_MANIFEST_KEY = Key.create<Boolean>("OdooLS.HasManifest")
 
 internal class OdooLSLspServerSupportProvider : LspServerSupportProvider {
 
-    fun findManifest(project: Project): Boolean {
-        project.getUserData(HAS_MANIFEST_KEY)?.let { return it }
-        val scope = GlobalSearchScope.projectScope(project)
-        val found = FilenameIndex.getVirtualFilesByName("__manifest__.py", scope).isNotEmpty()
-
-        project.putUserData(HAS_MANIFEST_KEY, found)
-        return found
-    }
-
     override fun fileOpened(project: Project, file: VirtualFile, serverStarter: LspServerSupportProvider.LspServerStarter) {
-        val isInstalled = project.getUserData<Boolean>(ODOO_LSP_INSTALLED)
-        if (isInstalled != true) {
-            return
-        }
         // Only run if project is loaded
         if (project.isDisposed) return
-
-        if (!findManifest(project)) return
-        println("__manifest__.py file detected in project. Starting OdooLS")
 
         serverStarter.ensureServerStarted(OdooLsServerDescriptor(project))
     }
 }
 
-private class OdooLsServerDescriptor(project: Project) : ProjectWideLspServerDescriptor(project, "OdooLS") {
+class OdooLsServerDescriptor(project: Project) : ProjectWideLspServerDescriptor(project, "OdooLS") {
     override val lspServerListener: LspServerListener?
         get() = OdooLspServerListener(project)
     override val lspCustomization: LspCustomization

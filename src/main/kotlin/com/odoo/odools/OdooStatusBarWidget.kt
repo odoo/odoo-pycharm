@@ -32,7 +32,7 @@ class OdooLspStatusWidget(
 ) : EditorBasedStatusBarPopup(project, false) {
 
     private var widgetState = WidgetState("Odoo", "Odoo (not started)", true)
-    private var listProfiles: List<String> = listOf("default", "disabled")
+    private var listProfiles: List<String> = listOf("default", "Disabled")
     private var gotProfiles: Boolean = false
     private var configHtml: Map<String, Any> = mapOf();
     private var currentStatus = "stop"
@@ -55,7 +55,7 @@ class OdooLspStatusWidget(
         val currentProfile = project.service<OdooProjectSettingsService>().state.selectedProfile
         var config = configHtml[currentProfile]
         if (config == null) {
-            config = "No configuration for this name"
+            config = "No configuration for this name: $currentProfile"
         }
         return Pair<String, String>(
                 currentProfile,
@@ -106,7 +106,7 @@ class OdooLspStatusWidget(
         override fun setSelected(e: AnActionEvent, state: Boolean) {
             if (state) {
                 project.service<OdooProjectSettingsService>().state.selectedProfile = option
-                if (option == "disabled") {
+                if (option == "Disabled") {
                     LspServerManager.getInstance(project)
                         .stopServers(OdooLSLspServerSupportProvider::class.java)
                     updateStatus()
@@ -151,16 +151,14 @@ class OdooLspStatusWidget(
                     }
                 })
             }
-            var textStart = "Start Server"
             if (isRunning) {
-                textStart = "Restart Server"
+                add(object : AnAction("Restart Server") {
+                    override fun actionPerformed(e: AnActionEvent) {
+                        LspServerManager.getInstance(project)
+                            .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
+                    }
+                })
             }
-            add(object : AnAction(textStart) {
-                override fun actionPerformed(e: AnActionEvent) {
-                    LspServerManager.getInstance(project)
-                        .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
-                }
-            })
             add(object : AnAction("Open Logs") {
                 override fun actionPerformed(e: AnActionEvent) {
                     val pathToInstallation = OdooLSApplicationSettings.getInstance().state.dataPath;
@@ -180,13 +178,8 @@ class OdooLspStatusWidget(
             })
         }
 
-        var title = "Odoo LS: Stopped"
-        if (isRunning) {
-            title = "Odoo LS: Running"
-        }
-
         val popup = JBPopupFactory.getInstance().createActionGroupPopup(
-            title,
+            "Odoo LS",
             group,
             context,
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
