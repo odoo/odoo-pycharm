@@ -1,8 +1,6 @@
 package com.odoo.odools.params
 
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull
-import org.eclipse.lsp4j.util.ToStringBuilder
-import org.eclipse.lsp4j.util.Preconditions
 
 class SetConfigurationParams {
 
@@ -15,8 +13,8 @@ class SetConfigurationParams {
     }
 
     constructor(@NonNull configFile: List<Map<String, Any>>, @NonNull html: Map<String, Any>) {
-        this.configFile = Preconditions.checkNotNull<List<Map<String, Any>>>(configFile, "configFile")
-        this.html = Preconditions.checkNotNull(html, "html")
+        this.configFile = configFile
+        this.html = html
     }
 
     @NonNull
@@ -25,7 +23,7 @@ class SetConfigurationParams {
     }
 
     fun setHtml(@NonNull html: Map<String, Any>) {
-        this.html = Preconditions.checkNotNull(html, "html")
+        this.html = html
     }
 
     @NonNull
@@ -34,14 +32,11 @@ class SetConfigurationParams {
     }
 
     fun setConfigFile(@NonNull configFile: List<Map<String, Any>>) {
-        this.configFile = Preconditions.checkNotNull<List<Map<String, Any>>>(configFile, "configFile")
+        this.configFile = configFile
     }
 
     override fun toString(): String {
-        val b = ToStringBuilder(this)
-        b.add("configFile", this.configFile)
-        b.add("html", this.html)
-        return b.toString()
+        return "SetConfigurationParams [configFile=$configFile, html=$html]"
     }
 
     override fun equals(obj: Any?): Boolean {
