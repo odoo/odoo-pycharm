@@ -1,8 +1,6 @@
 package com.odoo.odools.params
 
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull
-import org.eclipse.lsp4j.util.ToStringBuilder
-import org.eclipse.lsp4j.util.Preconditions
 
 class SetPidParams {
     @NonNull
@@ -11,7 +9,7 @@ class SetPidParams {
     constructor()
 
     constructor(@NonNull value: Int?) {
-        this.server_pid = Preconditions.checkNotNull<Int?>(value, "server_pid")
+        this.server_pid = requireNotNull(value) { "server_pid" }
     }
 
     @NonNull
@@ -20,13 +18,11 @@ class SetPidParams {
     }
 
     fun setServerPid(@NonNull value: Int?) {
-        this.server_pid = Preconditions.checkNotNull<Int?>(value, "server_pid")
+        this.server_pid = requireNotNull(value) { "server_pid" }
     }
 
     override fun toString(): String {
-        val b = ToStringBuilder(this)
-        b.add("serverPid", this.server_pid)
-        return b.toString()
+        return "SetPidParams [server_pid=$server_pid]"
     }
 
     override fun equals(obj: Any?): Boolean {

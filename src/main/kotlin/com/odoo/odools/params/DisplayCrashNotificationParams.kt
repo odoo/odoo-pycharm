@@ -1,8 +1,6 @@
 package com.odoo.odools.params
 
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull
-import org.eclipse.lsp4j.util.ToStringBuilder
-import org.eclipse.lsp4j.util.Preconditions
 
 class DisplayCrashNotificationParams {
 
@@ -17,9 +15,9 @@ class DisplayCrashNotificationParams {
     }
 
     constructor(@NonNull crashInfo: String, @NonNull pid: Long, @NonNull recentMessages: String) {
-        this.crashInfo = Preconditions.checkNotNull<String>(crashInfo, "crashInfo")
-        this.pid = Preconditions.checkNotNull(pid, "pid")
-        this.recentMessages = Preconditions.checkNotNull<String>(crashInfo, "recentMessages")
+        this.crashInfo = crashInfo
+        this.pid = pid
+        this.recentMessages = recentMessages
     }
 
     @NonNull
@@ -28,7 +26,7 @@ class DisplayCrashNotificationParams {
     }
 
     fun setPid(@NonNull pid: Long) {
-        this.pid = Preconditions.checkNotNull(pid, "pid")
+        this.pid = pid
     }
 
     @NonNull
@@ -37,7 +35,7 @@ class DisplayCrashNotificationParams {
     }
 
     fun setCrashInfo(@NonNull crashInfo: String) {
-        this.crashInfo = Preconditions.checkNotNull<String>(crashInfo, "crashInfo")
+        this.crashInfo = crashInfo
     }
 
     @NonNull
@@ -46,14 +44,11 @@ class DisplayCrashNotificationParams {
     }
 
     fun setRecentMessages(@NonNull recentMessages: String) {
-        this.recentMessages = Preconditions.checkNotNull<String>(recentMessages, "recentMessages")
+        this.recentMessages = recentMessages
     }
 
     override fun toString(): String {
-        val b = ToStringBuilder(this)
-        b.add("configFile", this.crashInfo)
-        b.add("html", this.pid)
-        return b.toString()
+        return "DisplayCrashNotificationParams [crashInfo=$crashInfo, pid=$pid, recentMessages=$recentMessages]"
     }
 
     override fun equals(obj: Any?): Boolean {
