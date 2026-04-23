@@ -15,7 +15,7 @@ It provides advanced language features, including:
 
 - Diagnostics
 
-For installation instructions and configuration details, see the [OdooLS](https://github.com/odoo/odoo-ls)
+For installation instructions and configuration details, see the OdooLS [repository](https://github.com/odoo/odoo-ls), and its [wiki](https://github.com/odoo/odoo-ls/wiki).
 <!-- Plugin description end -->
 
 ## Installation
