@@ -1,7 +1,7 @@
 package com.odoo.odools.forms;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -128,7 +128,7 @@ public class CrashReportForm extends DialogWrapper {
         String uid = UUID.randomUUID().toString();
         String pluginVersion = "unknown";
         IdeaPluginDescriptor descriptor =
-                PluginManagerCore.getPlugin(PluginId.getId("com.odoo.odools"));
+                PluginManager.getInstance().findEnabledPlugin(PluginId.getId("com.odoo.odools"));
         if (descriptor != null) {
             pluginVersion = descriptor.getVersion();
         }

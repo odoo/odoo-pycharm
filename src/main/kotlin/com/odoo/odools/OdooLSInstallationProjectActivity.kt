@@ -3,7 +3,7 @@ package com.odoo.odools
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.CapturingProcessHandler
 import com.intellij.execution.process.ProcessOutput
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -168,7 +168,7 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
             }
 
             val pluginId = "com.odoo.odools"
-            val plugin = PluginManagerCore.getPlugin(com.intellij.openapi.extensions.PluginId.getId(pluginId))
+            val plugin = PluginManager.getInstance().findEnabledPlugin(com.intellij.openapi.extensions.PluginId.getId(pluginId))
             val version = plugin?.version
             if (version == null) {
                 callback(false)
