@@ -4,15 +4,15 @@ import org.eclipse.lsp4j.jsonrpc.validation.NonNull
 
 class SetConfigurationParams {
 
-    private var configFile: List<Map<String, Any>>;
+    private var configFile: Map<String, Any>;
     private var html: Map<String, Any>;
 
     constructor() {
-        configFile = ArrayList()
+        configFile = HashMap()
         html = HashMap()
     }
 
-    constructor(@NonNull configFile: List<Map<String, Any>>, @NonNull html: Map<String, Any>) {
+    constructor(@NonNull configFile: Map<String, Any>, @NonNull html: Map<String, Any>) {
         this.configFile = configFile
         this.html = html
     }
@@ -27,11 +27,11 @@ class SetConfigurationParams {
     }
 
     @NonNull
-    fun getConfigFile(): List<Map<String, Any>> {
+    fun getConfigFile(): Map<String, Any> {
         return this.configFile
     }
 
-    fun setConfigFile(@NonNull configFile: List<Map<String, Any>>) {
+    fun setConfigFile(@NonNull configFile: Map<String, Any>) {
         this.configFile = configFile
     }
 
