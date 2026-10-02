@@ -1,10 +1,12 @@
 package com.odoo.odools
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -41,6 +43,19 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
         val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
         widget?.updateListProfiles(profiles)
         widget?.updateConfigurations(payload.getHtml())
+
+        // configFile is {"config": [{"name": ..., "odoo_path": {"value": ..., ...}, ...}, ...]}
+        val entries = payload.getConfigFile()["config"] as? List<*> ?: emptyList<Any>()
+        val profilesWithOdooPath = entries.mapNotNull { it as? Map<*, *> }
+            .filter { !((it["odoo_path"] as? Map<*, *>)?.get("value") as? String).isNullOrEmpty() }
+            .mapNotNull { it["name"] as? String }
+            .toSet()
+        val settingsService = project.service<OdooProjectSettingsService>()
+        if (settingsService.profilesWithOdooPath != profilesWithOdooPath) {
+            settingsService.profilesWithOdooPath = profilesWithOdooPath
+            // Re-run inspections, as OdooInspectionSuppressor depends on odoo_path being set
+            DaemonCodeAnalyzer.getInstance(project).restart()
+        }
     }
 
     @Suppress("unused")
