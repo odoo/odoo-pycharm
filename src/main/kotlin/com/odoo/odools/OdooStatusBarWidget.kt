@@ -1,5 +1,6 @@
 package com.odoo.odools
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.ide.highlighter.HtmlFileType
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -32,7 +33,7 @@ class OdooLspStatusWidget(
 ) : EditorBasedStatusBarPopup(project, false) {
 
     private var widgetState = WidgetState("Odoo", "Odoo (not started)", true)
-    private var listProfiles: List<String> = listOf("default", "Disabled")
+    private var listProfiles: List<String> = listOf(DEFAULT_PROFILE_NAME, DISABLED_PROFILE_NAME)
     private var gotProfiles: Boolean = false
     private var configHtml: Map<String, Any> = mapOf();
     private var currentStatus = "stop"
@@ -106,7 +107,7 @@ class OdooLspStatusWidget(
         override fun setSelected(e: AnActionEvent, state: Boolean) {
             if (state) {
                 project.service<OdooProjectSettingsService>().state.selectedProfile = option
-                if (option == "Disabled") {
+                if (option == DISABLED_PROFILE_NAME) {
                     LspServerManager.getInstance(project)
                         .stopServers(OdooLSLspServerSupportProvider::class.java)
                     updateStatus()
@@ -115,6 +116,8 @@ class OdooLspStatusWidget(
                         .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
                     updateStatus()
                 }
+                // Re-run inspections, as OdooInspectionSuppressor depends on the selected profile
+                DaemonCodeAnalyzer.getInstance(project).restart()
             }
         }
 

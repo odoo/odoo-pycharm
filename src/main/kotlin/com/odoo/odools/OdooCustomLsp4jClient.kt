@@ -1,11 +1,13 @@
 package com.odoo.odools
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -37,11 +39,29 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
     fun setConfiguration(payload: SetConfigurationParams) {
         var html = payload.getHtml()
         var profiles = html.keys.filter { it != "__all__" }.toMutableList()
-        profiles.add("Disabled")
+        profiles.add(DISABLED_PROFILE_NAME)
         val statusBar = WindowManager.getInstance().getStatusBar(project)
         val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
         widget?.updateListProfiles(profiles)
         widget?.updateConfigurations(payload.getHtml())
+
+        // configFile is {"config": [{"name": ..., "odoo_path": {"value": ..., "rejected": true?, ...}, ...}, ...]}
+        // A rejected (invalid) odoo_path is not used by the server, so it counts as unset.
+        val entries = payload.getConfigFile()["config"] as? List<*> ?: emptyList<Any>()
+        val profilesWithOdooPath = entries.mapNotNull { it as? Map<*, *> }
+            .filter { entry ->
+                val odooPath = entry["odoo_path"] as? Map<*, *> ?: return@filter false // not set
+                val value = odooPath["value"] as? String
+                odooPath["rejected"] != true && !value.isNullOrEmpty()
+            }
+            .mapNotNull { it["name"] as? String }
+            .toSet()
+        val settingsService = project.service<OdooProjectSettingsService>()
+        if (settingsService.profilesWithOdooPath != profilesWithOdooPath) {
+            settingsService.profilesWithOdooPath = profilesWithOdooPath
+            // Re-run inspections, as OdooInspectionSuppressor depends on odoo_path being set
+            DaemonCodeAnalyzer.getInstance(project).restart()
+        }
     }
 
     @Suppress("unused")
