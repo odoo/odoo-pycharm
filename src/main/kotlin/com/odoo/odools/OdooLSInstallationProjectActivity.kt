@@ -129,6 +129,7 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
                     ApplicationManager.getApplication().invokeLater {
                         callback(regex.find(output.stdout.trim())?.value)
                     }
+                    return@executeOnPooledThread
                 } else {
                     System.err.println("Error: ${output.stderr}")
                 }
