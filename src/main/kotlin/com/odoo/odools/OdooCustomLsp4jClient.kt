@@ -5,6 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -28,7 +29,7 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
     @Suppress("unused")
     @JsonNotification($$"$Odoo/setPid")
     fun setPid(pid: SetPidParams){
-        println("Got PID to watch (not implemented feature on PyCharm: $pid")
+        thisLogger().debug("Got PID to watch (not implemented feature on PyCharm): $pid")
     }
 
     @Suppress("unused")
@@ -46,7 +47,7 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
     @Suppress("unused")
     @JsonNotification($$"$Odoo/loadingStatusUpdate")
     fun loadingStatusUpdate(status: String){
-        println("Got loadingStatusUpdate: $status")
+        thisLogger().debug("Got loadingStatusUpdate: $status")
         val statusBar = WindowManager.getInstance().getStatusBar(project)
         val widget = statusBar?.getWidget("OdooLspStatusWidget") as? OdooLspStatusWidget
         widget?.updateStatus(status)
@@ -55,7 +56,7 @@ class OdooCustomLsp4jClient(val project: Project, handler: LspServerNotification
     @Suppress("unused")
     @JsonNotification($$"$Odoo/restartNeeded")
     fun restartNeeded() {
-        println("Got restartNeeded")
+        thisLogger().debug("Got restartNeeded")
         LspServerManager.getInstance(project)
             .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
     }
