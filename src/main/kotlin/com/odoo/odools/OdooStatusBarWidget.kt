@@ -1,5 +1,6 @@
 package com.odoo.odools
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.ide.highlighter.HtmlFileType
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -115,6 +116,8 @@ class OdooLspStatusWidget(
                         .stopAndRestartIfNeeded(OdooLSLspServerSupportProvider::class.java)
                     updateStatus()
                 }
+                // Re-run inspections, as OdooInspectionSuppressor depends on the selected profile
+                DaemonCodeAnalyzer.getInstance(project).restart()
             }
         }
 

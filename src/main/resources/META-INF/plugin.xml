@@ -20,6 +20,9 @@
                 isLogByDefault="false"/>
         <postStartupActivity implementation="com.odoo.odools.OdooLSInstallationProjectActivity"/>
         <fileEditorProvider implementation="com.odoo.odools.HtmlPreviewEditorProvider"/>
+        <lang.inspectionSuppressor
+                language="Python"
+                implementationClass="com.odoo.odools.OdooInspectionSuppressor"/>
         <statusBarWidgetFactory
                 id="OdooLspStatusWidget"
                 implementation="com.odoo.odools.OdooLspStatusWidgetFactory"/>
