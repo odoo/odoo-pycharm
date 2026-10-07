@@ -8,6 +8,7 @@ import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -27,7 +28,7 @@ val ODOO_LSP_INSTALLED = Key.create<Boolean>("OdooLS.Installed")
 
 class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
     override suspend fun execute(project: Project) {
-        println("Plugin started for project ${project.name}")
+        thisLogger().info("Plugin started for project ${project.name}")
         // Check installation
         val pathToInstallation = OdooLSApplicationSettings.getInstance().state.dataPath
         if (pathToInstallation == null || pathToInstallation.isEmpty()) {
@@ -130,10 +131,10 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
                         callback(regex.find(output.stdout.trim())?.value)
                     }
                 } else {
-                    System.err.println("Error: ${output.stderr}")
+                    thisLogger().warn("Unable to get OdooLS version: ${output.stderr}")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                thisLogger().warn("Unable to get OdooLS version", e)
             }
             ApplicationManager.getApplication().invokeLater {
                 callback(null)
@@ -224,7 +225,7 @@ class OdooLSInstallationProjectActivity : ProjectActivity, DumbAware {
                 copyDirectoryFromResourcesToInstallLocation("additional_stubs", targetLocation)
 
             }
-            println("Installation complete")
+            thisLogger().info("Installation complete")
             callback()
         }
     }

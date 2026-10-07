@@ -2,6 +2,7 @@ package com.odoo.odools
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
@@ -55,8 +56,7 @@ class OdooLsServerDescriptor(project: Project) : ProjectWideLspServerDescriptor(
         val exeName = if (SystemInfo.isWindows) "odoo_ls_server.exe" else "odoo_ls_server"
         val pathToInstallation = OdooLSApplicationSettings.getInstance().state.dataPath;
         val resourcePath = "${pathToInstallation}/$exeName"
-        println(pathToInstallation)
-
+        thisLogger().info("Starting OdooLS server: $resourcePath")
         return GeneralCommandLine(resourcePath)
     }
 
